@@ -17,7 +17,8 @@ fun main() {
         firstPart = PartProperties(
             ReadInputStrategy.readRaw,
             ParseInputStrategy.parseGroups(ParseInputStrategy.parseToInts::parse),
-            ::computePartOne
+            ::computePartOne,
+            24000
         ),
         secondPart = PartProperties(
             ReadInputStrategy.readRaw,

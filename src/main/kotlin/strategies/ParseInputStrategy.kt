@@ -7,11 +7,14 @@ fun interface ParseInputStrategy<Input, Data> {
         fun <T> parseGroups(parseRow: ParseInputStrategy<List<String>, List<T>>) =
             ParseInputStrategy { rawInput: String ->
                 rawInput
+                    .trimEnd()
                     .split("\n\n")
                     .map { groupRows -> groupRows.split("\n") }
                     .map(parseRow::parse)
             }
 
-        val parseToInts = ParseInputStrategy { list: List<String> -> list.map(String::toInt) }
+        val parseToInts = ParseInputStrategy { list: List<String> ->
+            list.map(String::toInt)
+        }
     }
 }

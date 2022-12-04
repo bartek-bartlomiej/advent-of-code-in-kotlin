@@ -11,8 +11,10 @@ class Puzzle<Input, Data, Result>(
 ) {
     private val inputFile: File = getFile("input")
 
-    private fun getFile(extension: String) =
-        File("src/main/resources", "%d/%02d.%s".format(number.year, number.day, extension))
+    private fun getExampleFile(suffix: ExampleSuffix) = getFile("example", suffix)
+
+    private fun getFile(extension: String, suffix: ExampleSuffix = ExampleSuffix.None) =
+        File("src/main/resources", "%d/%02d%s.%s".format(number.year, number.day, suffix.asString, extension))
 
     private val parts = listOf(firstPart, secondPart).map(::Part)
 
@@ -28,18 +30,47 @@ class Puzzle<Input, Data, Result>(
         ParseInputStrategy<Input, Data> by properties.parseStrategy,
         ComputeSolutionStrategy<Data, Result> by properties.computeStrategy {
 
+        private val tests = properties.tests
+
         fun run(): Result {
+            performTests()
             return solve(inputFile)
+        }
+
+        private fun performTests() {
+            tests.forEach(::performTest)
+        }
+
+        private fun performTest(suffix: ExampleSuffix, expectedResult: Result) {
+            val result = solve(getExampleFile(suffix))
+            check(expectedResult == result) { "Expected $expectedResult, got $result" }
         }
 
         private fun solve(file: File) = file.let(::read).let(::parse).let(::compute)
     }
 
+
+
     data class Number(val year: Int, val day: Int)
 }
 
-data class PartProperties<A, B, C>(
-    val readStrategy: ReadInputStrategy<A>,
-    val parseStrategy: ParseInputStrategy<A, B>,
-    val computeStrategy: ComputeSolutionStrategy<B, C>
-)
+enum class ExampleSuffix(val asString: String) {
+    A("a"),
+    B("b"),
+    C("c"),
+    None("")
+}
+
+data class PartProperties<Input, Data, Result>(
+    val readStrategy: ReadInputStrategy<Input>,
+    val parseStrategy: ParseInputStrategy<Input, Data>,
+    val computeStrategy: ComputeSolutionStrategy<Data, Result>,
+    val tests: Map<ExampleSuffix, Result>
+) {
+    constructor(
+        readStrategy: ReadInputStrategy<Input>,
+        parseStrategy: ParseInputStrategy<Input, Data>,
+        computeStrategy: ComputeSolutionStrategy<Data, Result>,
+        test: Result
+    ) : this(readStrategy, parseStrategy, computeStrategy, mapOf( ExampleSuffix.None to test))
+}
