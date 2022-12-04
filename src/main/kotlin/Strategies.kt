@@ -9,6 +9,8 @@ object ParseInputStrategy {
             .map(parseRow)
     }
 
+    fun <T> parseLines(parseRow: (String) -> T) = { lines: List<String> -> lines.map(parseRow) }
+
     val parseToInts = { list: List<String> ->
         list.map(String::toInt)
     }
