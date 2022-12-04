@@ -1,20 +1,6 @@
 package solutions.puzzle_2022_01
 
 import Puzzle
-import Puzzle.Part.Number
-
-fun computePartOne(inventories: List<List<Int>>): Int = inventories.maxOf(List<Int>::sum)
-
-fun computePartTwo(inventories: List<List<Int>>): Int = getMaxThreeUsingFold(inventories)
-
-fun getMaxThreeUsingSort(inventories: List<List<Int>>): Int =
-    inventories.map(List<Int>::sum).sorted().takeLast(3).sum()
-
-fun getMaxThreeUsingFold(inventories: List<List<Int>>): Int =
-    inventories.fold(listOf(0, 0, 0)) { podium, inventory ->
-        (podium + inventory.sum()).sortedDescending().take(3)
-    }.sum()
-
 
 val puzzle = Puzzle(
     number = Puzzle.Number(2022, 1),
@@ -31,9 +17,23 @@ val puzzle = Puzzle(
 )
 
 fun main() {
-    puzzle.test(Number.First, 24000)
-    puzzle.solve(Number.First)
+    puzzle.testFirst(24000)
+    puzzle.solveFirst()
 
-    puzzle.test(Number.Second, 45000)
-    puzzle.solve(Number.Second)
+    puzzle.testSecond(45000)
+    puzzle.solveSecond()
 }
+
+fun computePartOne(inventories: List<List<Int>>) = getMaxInventory(inventories)
+
+fun getMaxInventory(inventories: List<List<Int>>): Int = inventories.maxOf(List<Int>::sum)
+
+fun computePartTwo(inventories: List<List<Int>>): Int = sumMaxThreeUsingFold(inventories)
+
+fun sumMaxThreeUsingSort(inventories: List<List<Int>>): Int =
+    inventories.map(List<Int>::sum).sorted().takeLast(3).sum()
+
+fun sumMaxThreeUsingFold(inventories: List<List<Int>>): Int =
+    inventories.fold(listOf(0, 0, 0)) { podium, inventory ->
+        (podium + inventory.sum()).sortedDescending().take(3)
+    }.sum()

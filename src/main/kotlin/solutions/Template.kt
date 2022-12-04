@@ -23,10 +23,10 @@ val puzzle = Puzzle(
 )
 
 fun main() {
-    puzzle.test(Number.First, TODO("expected results"))
-    puzzle.solve(Number.First)
+    puzzle.testFirst(TODO("expected results"))
+    puzzle.solveFirst()
 
-    puzzle.test(Number.Second, TODO("expected results"))
-    puzzle.solve(Number.Second)
+    puzzle.testSecond(TODO("expected results"))
+    puzzle.solveSecond()
 }
 */

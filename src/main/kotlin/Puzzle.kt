@@ -1,38 +1,45 @@
 import java.io.File
 
 
-class Puzzle<Input, Data, Result>(
+class Puzzle<A, B, FirstResult, J, K, SecondResult>(
     private val number: Number,
-    firstPart: Part<Input, Data, Result>,
-    secondPart: Part<Input, Data, Result>
+    private val firstPart: Part<A, B, FirstResult>,
+    private val secondPart: Part<J, K, SecondResult>
 ) {
-    private val parts = mapOf(
-        Part.Number.First to firstPart,
-        Part.Number.Second to secondPart
-    )
-
-    fun solve(partNumber: Part.Number) {
-        solvePart(parts[partNumber]!!)
+    fun solveFirst() {
+        solvePart(firstPart)
     }
 
-    private fun solvePart(part: Part<Input, Data, Result>) {
+    fun solveSecond() {
+        solvePart(secondPart)
+    }
+
+    private fun <Input, Data, Result> solvePart(part: Part<Input, Data, Result>) {
         val inputFile = getInputFile()
         println(part.solve(inputFile))
     }
 
-    fun test(partNumber: Part.Number, expected: Result) {
-        testPart(parts[partNumber]!!, expected)
+    fun testFirst(expected: FirstResult) {
+        testPart(firstPart, expected)
     }
 
-    fun test(partNumber: Part.Number, tests: Map<ExampleSuffix, Result>) {
-        testPart(parts[partNumber]!!, tests)
+    fun testFirst(tests: Map<ExampleSuffix, FirstResult>) {
+        testPart(firstPart, tests)
     }
 
-    private fun testPart(part: Part<Input, Data, Result>, expected: Result) {
+    fun testSecond(expected: SecondResult) {
+        testPart(secondPart, expected)
+    }
+
+    fun testSecond(tests: Map<ExampleSuffix, SecondResult>) {
+        testPart(secondPart, tests)
+    }
+
+    private fun <Input, Data, Result> testPart(part: Part<Input, Data, Result>, expected: Result) {
         testPart(part, mapOf(ExampleSuffix.None to expected))
     }
 
-    private fun testPart(part: Part<Input, Data, Result>, tests: Map<ExampleSuffix, Result>) {
+    private fun <Input, Data, Result> testPart(part: Part<Input, Data, Result>, tests: Map<ExampleSuffix, Result>) {
         tests.forEach { (suffix, expectedResult) ->
             part.test(getExampleFile(suffix), expectedResult)
         }
@@ -46,7 +53,9 @@ class Puzzle<Input, Data, Result>(
         File("src/main/resources", "%d/%02d%s.%s".format(number.year, number.day, suffix.pathPart, type.pathPart))
 
     class Part<Input, Data, Result>(
-        private val read: (File) -> Input, private val parse: (Input) -> Data, private val compute: (Data) -> Result
+        private val read: (File) -> Input,
+        private val parse: (Input) -> Data,
+        private val compute: (Data) -> Result
     ) {
         fun solve(file: File) = file.let(read).let(parse).let(compute)
 
@@ -54,15 +63,10 @@ class Puzzle<Input, Data, Result>(
             val result = solve(file)
             check(expectedResult == result) { "Expected $expectedResult, got $result" }
         }
-
-        enum class Number {
-            First, Second
-        }
     }
 
     data class Number(val year: Int, val day: Int)
 }
-
 
 enum class FileType(val pathPart: String) {
     Input("input"), Example("example")
