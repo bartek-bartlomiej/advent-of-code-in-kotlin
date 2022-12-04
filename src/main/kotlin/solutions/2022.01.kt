@@ -7,9 +7,7 @@ import strategies.ReadInputStrategy
 
 fun computePartOne(inventories: List<List<Int>>): Int = inventories.maxOf(List<Int>::sum)
 
-fun computePartTwo(inventories: List<List<Int>>): Int {
-    return 0
-}
+fun computePartTwo(inventories: List<List<Int>>): Int = inventories.map(List<Int>::sum).sorted().takeLast(3).sum()
 
 fun main() {
     Puzzle(
@@ -23,7 +21,8 @@ fun main() {
         secondPart = PartProperties(
             ReadInputStrategy.readRaw,
             ParseInputStrategy.parseGroups(ParseInputStrategy.parseToInts::parse),
-            ::computePartTwo
+            ::computePartTwo,
+            45000
         )
     )
 }
