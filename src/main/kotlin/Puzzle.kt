@@ -1,76 +1,73 @@
-import strategies.ComputeSolutionStrategy
-import strategies.ParseInputStrategy
-import strategies.ReadInputStrategy
 import java.io.File
 
 
 class Puzzle<Input, Data, Result>(
     private val number: Number,
-    firstPart: PartProperties<Input, Data, Result>,
-    secondPart: PartProperties<Input, Data, Result>
+    firstPart: Part<Input, Data, Result>,
+    secondPart: Part<Input, Data, Result>
 ) {
-    private val inputFile: File = getFile("input")
+    private val parts = mapOf(
+        Part.Number.First to firstPart,
+        Part.Number.Second to secondPart
+    )
 
-    private fun getExampleFile(suffix: ExampleSuffix) = getFile("example", suffix)
-
-    private fun getFile(extension: String, suffix: ExampleSuffix = ExampleSuffix.None) =
-        File("src/main/resources", "%d/%02d%s.%s".format(number.year, number.day, suffix.asString, extension))
-
-    private val parts = listOf(firstPart, secondPart).map(::Part)
-
-    init {
-        run()
+    fun solve(partNumber: Part.Number) {
+        solvePart(parts[partNumber]!!)
     }
 
-    private fun run() = parts.forEach { part -> println(part.run()) }
+    private fun solvePart(part: Part<Input, Data, Result>) {
+        val inputFile = getInputFile()
+        println(part.solve(inputFile))
+    }
 
-    private inner class Part<Input, Data, Result>(
-        properties: PartProperties<Input, Data, Result>
-    ) : ReadInputStrategy<Input> by properties.readStrategy,
-        ParseInputStrategy<Input, Data> by properties.parseStrategy,
-        ComputeSolutionStrategy<Data, Result> by properties.computeStrategy {
+    fun test(partNumber: Part.Number, expected: Result) {
+        testPart(parts[partNumber]!!, expected)
+    }
 
-        private val tests = properties.tests
+    fun test(partNumber: Part.Number, tests: Map<ExampleSuffix, Result>) {
+        testPart(parts[partNumber]!!, tests)
+    }
 
-        fun run(): Result {
-            performTests()
-            return solve(inputFile)
+    private fun testPart(part: Part<Input, Data, Result>, expected: Result) {
+        testPart(part, mapOf(ExampleSuffix.None to expected))
+    }
+
+    private fun testPart(part: Part<Input, Data, Result>, tests: Map<ExampleSuffix, Result>) {
+        tests.forEach { (suffix, expectedResult) ->
+            part.test(getExampleFile(suffix), expectedResult)
         }
+    }
 
-        private fun performTests() {
-            tests.forEach(::performTest)
-        }
+    private fun getInputFile() = getFile(FileType.Input)
 
-        private fun performTest(suffix: ExampleSuffix, expectedResult: Result) {
-            val result = solve(getExampleFile(suffix))
+    private fun getExampleFile(suffix: ExampleSuffix) = getFile(FileType.Example, suffix)
+
+    private fun getFile(type: FileType, suffix: ExampleSuffix = ExampleSuffix.None) =
+        File("src/main/resources", "%d/%02d%s.%s".format(number.year, number.day, suffix.pathPart, type.pathPart))
+
+    class Part<Input, Data, Result>(
+        private val read: (File) -> Input, private val parse: (Input) -> Data, private val compute: (Data) -> Result
+    ) {
+        fun solve(file: File) = file.let(read).let(parse).let(compute)
+
+        fun test(file: File, expectedResult: Result) {
+            val result = solve(file)
             check(expectedResult == result) { "Expected $expectedResult, got $result" }
         }
 
-        private fun solve(file: File) = file.let(::read).let(::parse).let(::compute)
+        enum class Number {
+            First, Second
+        }
     }
-
-
 
     data class Number(val year: Int, val day: Int)
 }
 
-enum class ExampleSuffix(val asString: String) {
-    A("a"),
-    B("b"),
-    C("c"),
-    None("")
+
+enum class FileType(val pathPart: String) {
+    Input("input"), Example("example")
 }
 
-data class PartProperties<Input, Data, Result>(
-    val readStrategy: ReadInputStrategy<Input>,
-    val parseStrategy: ParseInputStrategy<Input, Data>,
-    val computeStrategy: ComputeSolutionStrategy<Data, Result>,
-    val tests: Map<ExampleSuffix, Result>
-) {
-    constructor(
-        readStrategy: ReadInputStrategy<Input>,
-        parseStrategy: ParseInputStrategy<Input, Data>,
-        computeStrategy: ComputeSolutionStrategy<Data, Result>,
-        test: Result
-    ) : this(readStrategy, parseStrategy, computeStrategy, mapOf( ExampleSuffix.None to test))
+enum class ExampleSuffix(val pathPart: String) {
+    A("a"), B("b"), C("c"), None("")
 }
