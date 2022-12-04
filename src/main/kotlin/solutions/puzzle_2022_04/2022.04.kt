@@ -8,7 +8,7 @@ fun main() {
     puzzle.testFirst(2)
     puzzle.solveFirst()
 
-    puzzle.testSecond(0)
+    puzzle.testSecond(4)
     puzzle.solveSecond()
 }
 
@@ -22,7 +22,7 @@ private val puzzle = Puzzle(
     secondPart = Puzzle.Part(
         ReadInputStrategy.readLines,
         ParseInputStrategy.parseLines(::parseRanges),
-        ::computePartTwo
+        ::countOverlappingRanges
     )
 )
 
@@ -39,4 +39,7 @@ private fun countFullyContainedRanges(pairs: List<Pair<IntRange, IntRange>>): In
 
 private fun IntRange.isFullyContainedIn(other: IntRange) = first in other && last in other
 
-private fun computePartTwo(pairs: List<Pair<IntRange, IntRange>>) = 0
+private fun countOverlappingRanges(pairs: List<Pair<IntRange, IntRange>>): Int =
+    pairs.count { (first, second) -> first.isContainedIn(second) || second.isContainedIn(first) }
+
+private fun IntRange.isContainedIn(other: IntRange) = first in other || last in other
