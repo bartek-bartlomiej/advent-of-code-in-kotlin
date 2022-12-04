@@ -8,33 +8,46 @@ fun main() {
     puzzle.testFirst(157)
     puzzle.solveFirst()
 
-    puzzle.testSecond(0)
+    puzzle.testSecond(70)
     puzzle.solveSecond()
 }
 
-val puzzle = Puzzle(
+private val puzzle = Puzzle(
     number = Puzzle.Number(2022, 3),
     firstPart = Puzzle.Part(
         ReadInputStrategy.readLines,
-        ParseInputStrategy.parseLines(::parseSingleRucksackDescription),
-        ::sumPriorities
+        ParseInputStrategy.parseLines(::parseRucksackDescription),
+        ::sumPrioritiesOfSharedItems
     ),
     secondPart = Puzzle.Part(
         ReadInputStrategy.readLines,
-        ParseInputStrategy.parseLines { it },
-        ::computePartTwo
+        ParseInputStrategy.parseLines(::parseRucksackDescription),
+        ::sumPrioritiesOfStickers
     )
 )
 
-fun parseSingleRucksackDescription(rucksack: String): Int {
+private fun parseRucksackDescription(rucksack: String): Rucksack {
     val (first, second) = rucksack.chunked(rucksack.length / 2).map(String::toSet)
-    val sharedItem = (first.intersect(second)).single()
-    return priorities[sharedItem]!!
+    return Rucksack(first, second)
 }
 
-fun sumPriorities(priorities: List<Int>) = priorities.sum()
+private fun sumPrioritiesOfSharedItems(rucksacks: List<Rucksack>): Int =
+    rucksacks.map(::findSharedItemInRucksack).let(::sumPriorities)
 
-fun computePartTwo(lines: List<String>) = 0
+private fun findSharedItemInRucksack(rucksack: Rucksack) =
+    rucksack.let { (first, second) -> (first.intersect(second)).single() }
 
-const val alphabet = "abcdefghijklmnopqrstuvwxyz"
-val priorities = (alphabet + alphabet.uppercase()).mapIndexed { index, letter -> letter to index + 1 }.toMap()
+private fun sumPrioritiesOfStickers(rucksacks: List<Rucksack>): Int =
+    rucksacks.chunked(3).map(::findSticker).let(::sumPriorities)
+
+private fun findSticker(rucksacks: List<Rucksack>) =
+    rucksacks.map { it.firstCompartment + it.secondCompartment }
+        .reduce { intersect, items -> intersect.intersect(items) }
+        .single()
+
+private fun sumPriorities(items: List<Char>) = items.sumOf { priorities[it]!! }
+
+private data class Rucksack(val firstCompartment: Set<Char>, val secondCompartment: Set<Char>)
+
+private const val ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+private val priorities = (ALPHABET + ALPHABET.uppercase()).mapIndexed { index, letter -> letter to index + 1 }.toMap()
