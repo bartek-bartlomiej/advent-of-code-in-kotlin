@@ -11,7 +11,7 @@ fun main() {
     puzzle.solveSecond()
 }
 
-val puzzle = Puzzle(
+private val puzzle = Puzzle(
     number = Puzzle.Number(TODO("year"), TODO("day")),
     firstPart = Puzzle.Part(
         TODO("read"),
@@ -25,7 +25,7 @@ val puzzle = Puzzle(
     )
 )
 
-fun computePartOne() = TODO("solution of first part")
+private fun computePartOne() = TODO("solution of first part")
 
-fun computePartTwo() = TODO("solution of second part")
+private fun computePartTwo() = TODO("solution of second part")
 */

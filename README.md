@@ -3,5 +3,5 @@ Welcome to my attempts to solve (some of) [Advent of Code](https://adventofcode.
 using [Kotlin](https://kotlinlang.org "Kotlin") language.
 
 ## Current progress
-- 2022: 02/50 stars
+- 2022: 08/50 stars
 - ...more soon!
