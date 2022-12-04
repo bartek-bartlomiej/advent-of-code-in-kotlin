@@ -42,7 +42,7 @@ private fun parseTopSecretStrategyGuide(line: String): Pair<Choice, Outcome> {
     )
 }
 
-private fun parseLine(line: String) = line.split(" ").map { it[0] }
+private fun parseLine(line: String) = line.split(" ").map(String::single)
 
 private fun computeTotalScoreUsingStrategy(roundInfos: List<Pair<Choice, Choice>>): Int =
     roundInfos.sumOf { (opponentChoice, yourChoice) ->

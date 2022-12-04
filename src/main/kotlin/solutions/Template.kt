@@ -2,11 +2,14 @@ package solutions
 
 /*
 import Puzzle
-import Puzzle.Part.Number
 
-fun computePartOne() = TODO("solution of first part")
+fun main() {
+    puzzle.testFirst(TODO("expected results"))
+    puzzle.solveFirst()
 
-fun computePartTwo() = TODO("solution of second part")
+    puzzle.testSecond(TODO("expected results"))
+    puzzle.solveSecond()
+}
 
 val puzzle = Puzzle(
     number = Puzzle.Number(TODO("year"), TODO("day")),
@@ -22,11 +25,7 @@ val puzzle = Puzzle(
     )
 )
 
-fun main() {
-    puzzle.testFirst(TODO("expected results"))
-    puzzle.solveFirst()
+fun computePartOne() = TODO("solution of first part")
 
-    puzzle.testSecond(TODO("expected results"))
-    puzzle.solveSecond()
-}
+fun computePartTwo() = TODO("solution of second part")
 */
