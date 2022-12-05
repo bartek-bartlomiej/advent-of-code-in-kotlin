@@ -1,16 +1,18 @@
 package solutions.puzzle_2022_01
 
+import ParseInputStrategy
 import Puzzle
+import ReadInputStrategy
 
 val puzzle = Puzzle(
     number = Puzzle.Number(2022, 1),
     firstPart = Puzzle.Part(
-        ReadInputStrategy.readRaw,
+        ReadInputStrategy.readGroups,
         ParseInputStrategy.parseGroups(ParseInputStrategy.parseToInts),
         ::computePartOne
     ),
     secondPart = Puzzle.Part(
-        ReadInputStrategy.readRaw,
+        ReadInputStrategy.readGroups,
         ParseInputStrategy.parseGroups(ParseInputStrategy.parseToInts),
         ::computePartTwo
     )
