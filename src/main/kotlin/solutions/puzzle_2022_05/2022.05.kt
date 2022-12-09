@@ -2,13 +2,12 @@ package solutions.puzzle_2022_05
 
 import Puzzle
 import ReadInputStrategy
-import java.util.*
 
 fun main() {
     puzzle.testFirst("CMZ")
     puzzle.solveFirst()
 
-    puzzle.testSecond("")
+    puzzle.testSecond("MCD")
     puzzle.solveSecond()
 }
 
@@ -17,23 +16,23 @@ private val puzzle = Puzzle(
     firstPart = Puzzle.Part(
         ReadInputStrategy.readGroups,
         ::parseDrawingAndCommands,
-        ::getTopCratesAfterRearrangement
+        ::getTopCratesAfterRearrangementUsingCrateMover9000
     ),
     secondPart = Puzzle.Part(
-        ReadInputStrategy.readRaw,
-        { it: String -> it },
-        ::computePartTwo
+        ReadInputStrategy.readGroups,
+        ::parseDrawingAndCommands,
+        ::getTopCratesAfterRearrangementUsingCrateMover9001
     )
 )
 
 private fun parseDrawingAndCommands(groups: List<List<String>>) =
-    groups.let { (drawing, commands) -> Pair(parseDrawing(drawing), parseCommands(commands)) }
+    groups.let { (drawing, commands) -> Procedure(parseDrawing(drawing), parseCommands(commands)) }
 
-private fun parseDrawing(drawing: List<String>): List<Stack<Char>> {
+private fun parseDrawing(drawing: List<String>): List<ArrayDeque<Char>> {
     val gap = " ".repeat(3)
     val count = drawing.last().trim().split(gap).size
 
-    val stacks = List(count) { Stack<Char>() }
+    val stacks = List(count) { ArrayDeque<Char>() }
 
     val cellPattern = "[?] "
     val itemPosition = cellPattern.indexOf("?")
@@ -42,7 +41,7 @@ private fun parseDrawing(drawing: List<String>): List<Stack<Char>> {
     rows.asReversed().forEach { row ->
         row.chunked(cellPattern.length).forEachIndexed { index, crate ->
             val item = crate[itemPosition].takeIf { it != emptyCell }
-            item?.let { stacks[index].push(it) }
+            item?.let { stacks[index].addLast(it) }
         }
     }
 
@@ -50,6 +49,40 @@ private fun parseDrawing(drawing: List<String>): List<Stack<Char>> {
 }
 
 private fun parseCommands(commands: List<String>) = commands.map(Command.Companion::fromString)
+
+private fun getTopCratesAfterRearrangementUsingCrateMover9000(procedure: Procedure) =
+    getTopCratesAfterRearrangement(procedure, ::rearrangeByCrateMover9000)
+
+private fun rearrangeByCrateMover9000(stacks: List<ArrayDeque<Char>>, count: Int, from: Int, to: Int) {
+    repeat(count) {
+        val item = stacks[from].removeLast()
+        stacks[to].addLast(item)
+    }
+}
+
+private fun getTopCratesAfterRearrangementUsingCrateMover9001(procedure: Procedure) =
+    getTopCratesAfterRearrangement(procedure, ::rearrangeByCrateMover9001)
+
+private fun rearrangeByCrateMover9001(stacks: List<ArrayDeque<Char>>, count: Int, from: Int, to: Int) {
+    stacks[to].addAll(stacks[from].takeLast(count))
+    repeat(count) { stacks[from].removeLast() }
+}
+
+private fun getTopCratesAfterRearrangement(
+    procedure: Procedure,
+    rearrangeMethod: (List<ArrayDeque<Char>>, Int, Int, Int) -> Unit
+) = procedure.let { (stacks, commands) ->
+    commands.forEach { (count, from, to) ->
+        rearrangeMethod(stacks, count, from, to)
+    }
+
+    stacks.map { it.last() }.joinToString("")
+}
+
+private data class Procedure(
+    val stacks: List<ArrayDeque<Char>>,
+    val commands: List<Command>
+)
 
 private data class Command(val count: Int, val from: Int, val to: Int) {
     companion object {
@@ -60,17 +93,3 @@ private data class Command(val count: Int, val from: Int, val to: Int) {
             }
     }
 }
-
-private fun getTopCratesAfterRearrangement(groups: Pair<List<Stack<Char>>, List<Command>>) =
-    groups.let { (stacks, commands) ->
-        commands.forEach { (count, from, to) ->
-            repeat(count) {
-                val item = stacks[from].pop()
-                stacks[to].push(item)
-            }
-        }
-
-        stacks.map { it.peek() }.joinToString("")
-    }
-
-private fun computePartTwo(it: String) = ""
