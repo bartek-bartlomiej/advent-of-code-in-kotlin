@@ -32,7 +32,7 @@ private fun parseDrawing(drawing: List<String>): List<ArrayDeque<Char>> {
     val gap = " ".repeat(3)
     val count = drawing.last().trim().split(gap).size
 
-    val stacks = List(count) { ArrayDeque<Char>() }
+    val stacks = List(count) { Stack() }
 
     val cellPattern = "[?] "
     val itemPosition = cellPattern.indexOf("?")
@@ -51,38 +51,45 @@ private fun parseDrawing(drawing: List<String>): List<ArrayDeque<Char>> {
 private fun parseCommands(commands: List<String>) = commands.map(Command.Companion::fromString)
 
 private fun getTopCratesAfterRearrangementUsingCrateMover9000(procedure: Procedure) =
-    getTopCratesAfterRearrangement(procedure, ::rearrangeByCrateMover9000)
+    getTopCratesAfterRearrangement(procedure, List<Stack>::rearrangeByCrateMover9000)
 
-private fun rearrangeByCrateMover9000(stacks: List<ArrayDeque<Char>>, count: Int, from: Int, to: Int) {
+private fun List<Stack>.rearrangeByCrateMover9000(count: Int, from: Int, to: Int) {
     repeat(count) {
-        val item = stacks[from].removeLast()
-        stacks[to].addLast(item)
+        val item = get(from).removeLast()
+        get(to).addLast(item)
     }
 }
 
 private fun getTopCratesAfterRearrangementUsingCrateMover9001(procedure: Procedure) =
-    getTopCratesAfterRearrangement(procedure, ::rearrangeByCrateMover9001)
+    getTopCratesAfterRearrangement(procedure, List<Stack>::rearrangeByCrateMover9001)
 
-private fun rearrangeByCrateMover9001(stacks: List<ArrayDeque<Char>>, count: Int, from: Int, to: Int) {
-    stacks[to].addAll(stacks[from].takeLast(count))
-    repeat(count) { stacks[from].removeLast() }
+
+private fun List<Stack>.rearrangeByCrateMover9001(count: Int, from: Int, to: Int) {
+    get(to).addAll(get(from).takeLast(count))
+    repeat(count) { get(from).removeLast() }
 }
 
-private fun getTopCratesAfterRearrangement(
-    procedure: Procedure,
-    rearrangeMethod: (List<ArrayDeque<Char>>, Int, Int, Int) -> Unit
-) = procedure.let { (stacks, commands) ->
-    commands.forEach { (count, from, to) ->
-        rearrangeMethod(stacks, count, from, to)
+private fun getTopCratesAfterRearrangement(procedure: Procedure, rearrangeMethod: List<Stack>.(Int, Int, Int) -> Unit) =
+    procedure.run {
+        rearrange(rearrangeMethod)
+        topCrates
     }
 
-    stacks.map { it.last() }.joinToString("")
-}
+typealias Stack = ArrayDeque<Char>
 
 private data class Procedure(
-    val stacks: List<ArrayDeque<Char>>,
-    val commands: List<Command>
-)
+    private val stacks: List<Stack>,
+    private val commands: List<Command>
+) {
+    fun rearrange(method: List<Stack>.(Int, Int, Int) -> Unit) {
+        commands.forEach { (count, from, to) ->
+            stacks.method(count, from, to)
+        }
+    }
+
+    val topCrates get() = stacks.map { it.last() }.joinToString("")
+}
+
 
 private data class Command(val count: Int, val from: Int, val to: Int) {
     companion object {
