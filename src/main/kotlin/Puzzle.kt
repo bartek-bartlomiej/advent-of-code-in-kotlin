@@ -73,5 +73,5 @@ enum class FileType(val pathPart: String) {
 }
 
 enum class ExampleSuffix(val pathPart: String) {
-    A("a"), B("b"), C("c"), None("")
+    A("a"), B("b"), C("c"), D("d"), E("e"), None("")
 }

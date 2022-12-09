@@ -1,6 +1,8 @@
 import java.io.File
 
 object ParseInputStrategy {
+    val leaveAsString: (String) -> String = { it }
+
     fun <T> parseGroups(parseGroup: (List<String>) -> List<T>) = { groups: List<List<String>> -> groups.map(parseGroup) }
 
     fun <T> parseLines(parseRow: (String) -> T) = { lines: List<String> -> lines.map(parseRow) }
