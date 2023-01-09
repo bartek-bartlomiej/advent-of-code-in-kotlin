@@ -93,34 +93,32 @@ private fun computePartTwo(trees: Board<Int>): Int {
         repeat(width) { heightIndex ->
             val treeHeight = trees[rowIndex][heightIndex]
 
-            var leftCount = 0
-            for (i in (rowIndex - 1) downTo 0) {
-                leftCount++
-                if (trees[i][heightIndex] >= treeHeight) break
+            val leftCount = ((rowIndex - 1) downTo 0).withIndex().run {
+                firstOrNull() { (_, rowIndex) -> trees[rowIndex][heightIndex] >= treeHeight }
+                    ?.let { it.index + 1 }
+                    ?: count()
             }
 
-            var rightCount = 0
-            for (i in (rowIndex + 1) until width) {
-                rightCount++
-                if (trees[i][heightIndex] >= treeHeight) break
+            val rightCount = ((rowIndex + 1) until width).withIndex().run {
+                firstOrNull() { (_, rowIndex) -> trees[rowIndex][heightIndex] >= treeHeight }
+                    ?.let { it.index + 1 }
+                    ?: count()
             }
 
-            var topCount = 0
-            for (j in (heightIndex - 1) downTo 0) {
-                topCount++
-                if (trees[rowIndex][j] >= treeHeight) break
+            val topCount = ((heightIndex - 1) downTo 0).withIndex().run {
+                firstOrNull() { (_, heightIndex) -> trees[rowIndex][heightIndex] >= treeHeight }
+                    ?.let { it.index + 1 }
+                    ?: count()
             }
-            var bottomCount = 0
-            for (j in (heightIndex + 1) until height) {
-                bottomCount++
-                if (trees[rowIndex][j] >= treeHeight) break
+
+            val bottomCount = ((heightIndex + 1) until height).withIndex().run {
+                firstOrNull() { (_, heightIndex) -> trees[rowIndex][heightIndex] >= treeHeight }
+                    ?.let { it.index + 1 }
+                    ?: count()
             }
 
             val score = leftCount * topCount * rightCount * bottomCount
-            if (score > maximumScore) {
-                maximumScore = score
-                println("$rowIndex, $heightIndex = $score")
-            }
+            if (score > maximumScore) maximumScore = score
         }
     }
 
