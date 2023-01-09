@@ -1,10 +1,10 @@
 import java.io.File
 
 
-class Puzzle<A, B, FirstResult, J, K, SecondResult>(
+class Puzzle<FirstInput, FirstData, FirstResult, SecondInput, SecondData, SecondResult>(
     private val number: Number,
-    private val firstPart: Part<A, B, FirstResult>,
-    private val secondPart: Part<J, K, SecondResult>
+    private val firstPart: Part<FirstInput, FirstData, FirstResult>,
+    private val secondPart: Part<SecondInput, SecondData, SecondResult>
 ) {
     fun solveFirst() {
         solvePart(firstPart)
