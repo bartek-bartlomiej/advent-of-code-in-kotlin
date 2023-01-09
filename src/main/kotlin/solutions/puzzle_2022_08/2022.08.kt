@@ -84,6 +84,47 @@ private fun countVisibleTrees(trees: Board<Int>): Int {
     return treesVisibility.flatten().count { it }
 }
 
-private fun computePartTwo(trees: Board<Int>) = 8
+private fun computePartTwo(trees: Board<Int>): Int {
+    val height = trees.size
+    val width = trees.first().size
+
+    var maximumScore = 0
+    repeat(height) { rowIndex ->
+        repeat(width) { heightIndex ->
+            val treeHeight = trees[rowIndex][heightIndex]
+
+            var leftCount = 0
+            for (i in (rowIndex - 1) downTo 0) {
+                leftCount++
+                if (trees[i][heightIndex] >= treeHeight) break
+            }
+
+            var rightCount = 0
+            for (i in (rowIndex + 1) until width) {
+                rightCount++
+                if (trees[i][heightIndex] >= treeHeight) break
+            }
+
+            var topCount = 0
+            for (j in (heightIndex - 1) downTo 0) {
+                topCount++
+                if (trees[rowIndex][j] >= treeHeight) break
+            }
+            var bottomCount = 0
+            for (j in (heightIndex + 1) until height) {
+                bottomCount++
+                if (trees[rowIndex][j] >= treeHeight) break
+            }
+
+            val score = leftCount * topCount * rightCount * bottomCount
+            if (score > maximumScore) {
+                maximumScore = score
+                println("$rowIndex, $heightIndex = $score")
+            }
+        }
+    }
+
+    return maximumScore
+}
 
 private typealias Board<T> = List<List<T>>
