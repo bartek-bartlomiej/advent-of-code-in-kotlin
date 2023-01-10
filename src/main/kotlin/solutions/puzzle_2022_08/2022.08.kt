@@ -21,7 +21,7 @@ private val puzzle = Puzzle(
     secondPart = Puzzle.Part(
         ReadInputStrategy.readLines,
         ::parseTreesVisibility,
-        ::computePartTwo
+        ::computeMaximumScore
     )
 )
 
@@ -84,7 +84,7 @@ private fun countVisibleTrees(trees: Board<Int>): Int {
     return treesVisibility.flatten().count { it }
 }
 
-private fun computePartTwo(trees: Board<Int>): Int {
+private fun computeMaximumScore(trees: Board<Int>): Int {
     val height = trees.size
     val width = trees.first().size
 
